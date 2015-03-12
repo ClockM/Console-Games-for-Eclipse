@@ -1,4 +1,4 @@
-# clockm_console_games
+# ConsoleGames
 A collection of some Java console games I'm making for educational and experimental purposes
 
 I'll be using this as my own personal sandbox for stuff
