@@ -8,7 +8,7 @@
 
 public class ConwayGame {
 	
-	public double verNum = 0.11;
+	public double verNum = 0.12;
 	
 	public void runGame()
 	{
@@ -16,7 +16,6 @@ public class ConwayGame {
 		
 		boolean[][] b = null;
 		int menuOption = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
-		System.out.println(menuOption);
 		switch(menuOption)
 		{
 			case 1: b = newGame();
@@ -48,14 +47,26 @@ public class ConwayGame {
 	
 	private boolean[][] loadGame()
 	{
-		boolean[][] b = {{false, false, true, false, false},
-		 		 		{false, false, true, false, false},
-		 		 		{false, false, true, false, false},
-		 		 		{false, false, true, false, false},
-		 		 		{false, false, true, false, false},};
-		b = ConGameUtil.SwapDim(b);
+		boolean[][] test1 = {{false, false, true, false, false},
+ 		 					{false, false, true, false, false},
+ 		 					{false, false, true, false, false},
+ 		 					{false, false, true, false, false},
+ 		 					{false, false, true, false, false},};
 		
-		return b;
+		boolean[][] test2 = {{false, false, true, false, false},
+ 		 					{false, false, false, false, false},
+ 		 					{false, false, false, false, false},
+ 		 					{false, false, true, false, false},
+ 		 					{false, true, true, true, false},};
+		
+		ConGameUtil.makeSpace(0);
+		int loadMenu = ConGameUtil.promptInt("1. Load test1 \n2. Load test2", 1, 2);
+		switch(loadMenu)
+		{
+			case 1: return ConGameUtil.SwapDim(test1);
+			case 2: return ConGameUtil.SwapDim(test2);
+			default: return new boolean[1][1];
+		}
 	}
 	
 	// bNext returns the next "step" of the board.
