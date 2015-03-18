@@ -2,7 +2,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /** Things to add/do:
- * 	Refactor code, further clarify comments
+ * 	Improve clarity of comments
  * 	A system for easy input for making initial boards
  * 	A system for incrementing the board manually or automatically
  * 	A system for saving and loading boards
@@ -10,29 +10,33 @@ import java.util.Scanner;
 
 public class ConwayGame {
 	
-	public double verNum = 0.03;
+	public double verNum = 0.10;
 	
 	public void runGame()
 	{
 		System.out.println("Welcome to GoL v. " + verNum + "!");
 		System.out.println();
 	
-		int bX = promptInt("Length of the board? (In cells)");
-		int bY = promptInt("Height of the board? (In cells)");
+		// Prompts the length and height of the board
+		int bLength = promptInt("Length of the board? (In cells)");
+		System.out.println(bLength);
+		int bHeight = promptInt("Height of the board? (In cells)");
 		
 		/*For testing purposes:
 		boolean[][] b = {{false, false, true, false, false},
 				 		 {false, false, true, false, false},
 				 		 {false, false, true, false, false},
 				 		 {false, false, true, false, false},
-				 		 {false, false, true, false, false},}; //The "board"- True is alive, false is dead
+				 		 {false, false, true, false, false},};
 				 		 b = bSwapDim(b);
 		*/
 		
-		boolean[][] b = new boolean[bX][bY];
+		//The "board"- True is alive, false is dead
+		boolean[][] b = new boolean[bLength][bHeight];
 		
+		//Prints the first few steps on the board
 		printBoard(b);
-		for(int i=0;i<=10;i++)
+		for(int i=0;i<=5;i++)
 		{
 			b = bNext(b);
 			printBoard(b);
@@ -40,30 +44,50 @@ public class ConwayGame {
 		
 	}
 	
-	private boolean[][] bNext(boolean[][] b) //Returns the next step of the board
+	// bNext returns the next "step" of the board.
+	private boolean[][] bNext(boolean[][] b)
 	{
-		boolean[][] bNext = new boolean[b.length][b[0].length]; //The array to be returned, the next increment of the board
+		//The array to be returned, the next increment of the board
+		boolean[][] bNext = new boolean[b.length][b[0].length];
 		
-		//The first set of nested loops goes through the entire board, same order as drawing
+		//The first set of nested loops goes through the entire board (same order as drawing- Left-right up-down)
 		for(int j=b[0].length-1;j>=0;j--)
 		{
 			for(int i=0;i<b.length;i++)
 			{
-				int n = 0; // Used to count the # of neighbors
+				// The # of neighbors counted
+				int n = 0;
 				
 				//Second set of nested loops used to count neighbors of selected cell
 				for(int k = (i-1);k<=(i+1);k++)
 				{
 					for(int l = (j-1);l<=(j+1);l++)
 					{   
-						//Doesn't do anything if b[k][l] doesn't actually exist
-						try{if(b[k][l]){n++;}}catch(ArrayIndexOutOfBoundsException e){}
+						try
+						{
+							if(b[k][l])
+							{
+								n++;
+							}
+						}
+						catch(ArrayIndexOutOfBoundsException e)
+						{
+							// Does nothing if exception is caught
+						}
 					}
-				}
+				} //End of second set of nested for loops
 				
-				if(b[i][j]){n--;} //Subtracts itself from # of neighbors if alive
+				//Subtracts itself from # of neighbors if alive
+				if(b[i][j])
+				{
+					n--;
+				} 
 			
-				//Determines if this cell is alive or dead next step
+				/* Determines if this cell is alive or dead next step, such that:
+				 * If the cell is alive and has 2 or 3 neighbors, it survives
+				 * If the cell is alive and has less than 2 or more than 3 neighbors, it survives
+				 * If the cell is dead and has exactly 3 neighbors it becomes alive
+				 */
 				if(b[i][j])
 				{
 					if(n>=2 && n<=3)
@@ -79,7 +103,7 @@ public class ConwayGame {
 					}
 				}
 			}
-		}
+		} //End of first set of nested for loops
 		return bNext;
 	}
 	
@@ -87,22 +111,19 @@ public class ConwayGame {
 	private int promptInt(String s)
 	{
 		Scanner userInput = null;
-		try{
-				System.out.println(s);
-				userInput = new Scanner(System.in);
-				int n = userInput.nextInt();
-				return n;
-				
-			}catch(InputMismatchException e)
-			{
-				makeSpace(1);
-				System.out.println("*Sorry, please input an integer*");
-				return promptInt(s);
-				
-			}finally
-			{
-				userInput.close();
-			}
+		try
+		{
+			System.out.println(s);
+			userInput = new Scanner(System.in);
+			int n = userInput.nextInt();
+			return n;
+		}
+		catch(InputMismatchException e)
+		{
+			makeSpace(0);
+			System.out.println("*Sorry, please input an integer*");
+			return promptInt(s);
+		}
 	}
 	
 	//Returns a 2D boolean array such that b[i][j] becomes b[j][i] for all values of i and j
@@ -120,9 +141,10 @@ public class ConwayGame {
 		return bInv;
 	}
 	
+	// Prints the board passed to it. 1 is alive and 0 is dead
 	private void printBoard(boolean[][] b)
 	{
-		makeSpace(5);
+		makeSpace(4);
 		
 		/* NOTE! The order of j and i are swapped around to accommodate for
 		 * printing in console, such that each cell is printed left-right, up-down.
@@ -152,10 +174,11 @@ public class ConwayGame {
 		}
 	}
 	
-	private void makeSpace(int n) //It's a shame I can't "clear" the console
+	// Creates a break between messages and an additional n line breaks
+	private void makeSpace(int n)//It's a shame I can't "clear" the console
 	{
 		System.out.print("----------------------------");
-		for(int i=0;i<n;i++)
+		for(int i=0;i<=n;i++)
 		{
 			System.out.println();
 		}
