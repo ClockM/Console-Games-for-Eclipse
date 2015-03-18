@@ -1,5 +1,3 @@
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
 /** Things to add/do:
  * 	Improve clarity of comments
@@ -10,29 +8,22 @@ import java.util.Scanner;
 
 public class ConwayGame {
 	
-	public double verNum = 0.10;
+	public double verNum = 0.11;
 	
 	public void runGame()
 	{
 		System.out.println("Welcome to GoL v. " + verNum + "!");
-		System.out.println();
-	
-		// Prompts the length and height of the board
-		int bLength = promptInt("Length of the board? (In cells)");
-		System.out.println(bLength);
-		int bHeight = promptInt("Height of the board? (In cells)");
 		
-		/*For testing purposes:
-		boolean[][] b = {{false, false, true, false, false},
-				 		 {false, false, true, false, false},
-				 		 {false, false, true, false, false},
-				 		 {false, false, true, false, false},
-				 		 {false, false, true, false, false},};
-				 		 b = bSwapDim(b);
-		*/
-		
-		//The "board"- True is alive, false is dead
-		boolean[][] b = new boolean[bLength][bHeight];
+		boolean[][] b = null;
+		int menuOption = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
+		System.out.println(menuOption);
+		switch(menuOption)
+		{
+			case 1: b = newGame();
+			break;
+			case 2: b = loadGame();
+			break;
+		}
 		
 		//Prints the first few steps on the board
 		printBoard(b);
@@ -42,6 +33,29 @@ public class ConwayGame {
 			printBoard(b);
 		}
 		
+	}
+	
+	private boolean[][] newGame()
+	{
+		// Prompts the length and height of the board
+		int bLength = ConGameUtil.promptInt("Length of the board? (In cells)", 1, 10);
+		int bHeight = ConGameUtil.promptInt("Height of the board? (In cells)", 1, 10);
+				
+				//The "board"- True is alive, false is dead
+				boolean[][] b = new boolean[bLength][bHeight];
+				return b;
+	}
+	
+	private boolean[][] loadGame()
+	{
+		boolean[][] b = {{false, false, true, false, false},
+		 		 		{false, false, true, false, false},
+		 		 		{false, false, true, false, false},
+		 		 		{false, false, true, false, false},
+		 		 		{false, false, true, false, false},};
+		b = ConGameUtil.SwapDim(b);
+		
+		return b;
 	}
 	
 	// bNext returns the next "step" of the board.
@@ -107,44 +121,10 @@ public class ConwayGame {
 		return bNext;
 	}
 	
-	// Prints the string s and prompts recursively for an integer value
-	private int promptInt(String s)
-	{
-		Scanner userInput = null;
-		try
-		{
-			System.out.println(s);
-			userInput = new Scanner(System.in);
-			int n = userInput.nextInt();
-			return n;
-		}
-		catch(InputMismatchException e)
-		{
-			makeSpace(0);
-			System.out.println("*Sorry, please input an integer*");
-			return promptInt(s);
-		}
-	}
-	
-	//Returns a 2D boolean array such that b[i][j] becomes b[j][i] for all values of i and j
-	private boolean[][] bSwapDim(boolean[][] b)
-	{
-		boolean[][] bInv = new boolean[b[0].length][b.length];
-		
-		for(int j=b[0].length-1;j>=0;j--)
-		{
-			for(int i=0;i<b.length;i++)
-			{
-				bInv[j][i] = b[i][j];
-			}
-		}
-		return bInv;
-	}
-	
 	// Prints the board passed to it. 1 is alive and 0 is dead
 	private void printBoard(boolean[][] b)
 	{
-		makeSpace(4);
+		ConGameUtil.makeSpace(4);
 		
 		/* NOTE! The order of j and i are swapped around to accommodate for
 		 * printing in console, such that each cell is printed left-right, up-down.
@@ -171,16 +151,6 @@ public class ConwayGame {
 					System.out.print(" ");
 				}
 			}
-		}
-	}
-	
-	// Creates a break between messages and an additional n line breaks
-	private void makeSpace(int n)//It's a shame I can't "clear" the console
-	{
-		System.out.print("----------------------------");
-		for(int i=0;i<=n;i++)
-		{
-			System.out.println();
 		}
 	}
 
