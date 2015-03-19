@@ -8,12 +8,14 @@
 
 public class ConwayGame {
 	
-	public double verNum = 0.12;
+	public double verNum = 0.20;
 	
+	// Runs the game. Not to be confused with run()
 	public void runGame()
 	{
 		System.out.println("Welcome to GoL v. " + verNum + "!");
 		
+		// Main menu determines the board. newGame and loadGame may be void later
 		boolean[][] b = null;
 		int menuOption = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
 		switch(menuOption)
@@ -25,28 +27,61 @@ public class ConwayGame {
 		}
 		
 		//Prints the first few steps on the board
+		ConGameUtil.makeSpace(4);
 		printBoard(b);
 		for(int i=0;i<=5;i++)
 		{
-			b = bNext(b);
+			b = nextBoard(b);
+			ConGameUtil.makeSpace(4);
 			printBoard(b);
 		}
 		
 	}
 	
+	// Creates a new board
 	private boolean[][] newGame()
 	{
-		// Prompts the length and height of the board
-		int bLength = ConGameUtil.promptInt("Length of the board? (In cells)", 1, 10);
-		int bHeight = ConGameUtil.promptInt("Height of the board? (In cells)", 1, 10);
-				
-				//The "board"- True is alive, false is dead
-				boolean[][] b = new boolean[bLength][bHeight];
-				return b;
+		// Prompts the length and height of the board and stores the dimensions in b
+		boolean[][] bNew = new boolean[ConGameUtil.promptInt("Length of the board? (In cells)", 1, 10)][ConGameUtil.promptInt("Height of the board? (In cells)", 1, 10)];
+		
+		boolean doneEditingBoard = false;
+		while (!doneEditingBoard)
+		{
+			ConGameUtil.makeSpace(0);
+			printBoard(bNew);
+			
+			int rowOption = ConGameUtil.promptInt("Enter the # of a row (from the bottom) to edit it.\nEnter 0 once you're done.", 0, bNew[0].length);
+			if(rowOption == 0)
+			{
+				doneEditingBoard = true;
+			}
+			else
+			{
+				boolean doneEditingRow = false;
+				while(!doneEditingRow)
+				{
+					ConGameUtil.makeSpace(0);
+					printRow(bNew, rowOption-1);
+					int cellOption = ConGameUtil.promptInt("Enter the # of a cell (from the left) to change it.\nEnter 0 once you're done.", 0, bNew.length);
+					if(cellOption == 0)
+					{
+						doneEditingRow = true;
+					}
+					else
+					{
+						bNew[cellOption - 1][rowOption - 1] = !bNew[cellOption - 1][rowOption - 1];
+					}
+				}
+			}
+		}
+		
+		return bNew;
 	}
 	
+	// Loads test boards, will later read files and load them
 	private boolean[][] loadGame()
 	{
+		// test boards are hard-coded below, as they would appear in the console
 		boolean[][] test1 = {{false, false, true, false, false},
  		 					{false, false, true, false, false},
  		 					{false, false, true, false, false},
@@ -69,8 +104,8 @@ public class ConwayGame {
 		}
 	}
 	
-	// bNext returns the next "step" of the board.
-	private boolean[][] bNext(boolean[][] b)
+	// Calculates and returns the next "step" of the board.
+	private boolean[][] nextBoard(boolean[][] b)
 	{
 		//The array to be returned, the next increment of the board
 		boolean[][] bNext = new boolean[b.length][b[0].length];
@@ -132,37 +167,37 @@ public class ConwayGame {
 		return bNext;
 	}
 	
-	// Prints the board passed to it. 1 is alive and 0 is dead
+	/* NOTE! The order of j and i are swapped around to accommodate for
+	 * printing in console, such that each cell is printed left-right, up-down.
+	 * j is still Y and i is still X though...
+	 * NOTE! printBoard() and printRow() are candidates for migration to ConGameUtil*/
+	
+	// Prints the board passed to it. 1 is alive and 0 is dead.
+	// Candidate for migration to ConGameUtil. 
 	private void printBoard(boolean[][] b)
 	{
-		ConGameUtil.makeSpace(4);
-		
-		/* NOTE! The order of j and i are swapped around to accommodate for
-		 * printing in console, such that each cell is printed left-right, up-down.
-		 * j is still Y and i is still X though... */
 		for(int j=b[0].length-1;j>=0;j--)
 		{
-			for(int i=0;i<b.length;i++)
-			{
-				if(b[i][j])
-				{
-					System.out.print("1");
-				}
-				else
-				{
-					System.out.print("0");
-				}
-				
-				if(i==b.length-1)
-				{
-					System.out.println();
-				}
-				else
-				{
-					System.out.print(" ");
-				}
-			}
+			printRow(b, j);
+			System.out.println();
 		}
 	}
 
+	// Prints the row (All values of i for j) of the board passed
+	private void printRow(boolean[][] b, int j)
+	{
+		for(int i = 0; i<b.length; i++)
+		{
+			if(b[i][j])
+			{
+				System.out.print("1");
+			}
+			else
+			{
+				System.out.print("0");
+			}
+			
+			System.out.print(" ");
+		}
+	}
 }
