@@ -3,18 +3,21 @@ import java.util.Scanner;
 
 
 /**
- * @author Will Brown (AKA ClockM)
- * 
  * This public class is a collection of useful methods for making console games
  * 
  * List of methods:
  * makeSpace()
  * promptInt()
  * swapDim()
+ * 
+ * @author Will Brown (AKA ClockM)
  */
 
 public class ConGameUtil
 {
+	// Is using a static scanner a good idea?
+	private static Scanner userInput = null;
+	
 	// Creates a break between messages and an additional n line breaks
 	public static void makeSpace(int n)
 	{
@@ -28,44 +31,52 @@ public class ConGameUtil
 	// Prints the string s and prompts recursively for an integer value
 	public static int promptInt(String s)
 	{
-		Scanner userInput = null;
-		try
+		int n = 0;
+		boolean promptDone = false;
+		while(!promptDone)
 		{
-			System.out.println(s);
-			userInput = new Scanner(System.in);
-			int n = userInput.nextInt();
-			return n;
+			try
+			{
+				System.out.println(s);
+				userInput = new Scanner(System.in);
+				n = userInput.nextInt();
+				promptDone = true;
+			}
+			catch(InputMismatchException e)
+			{
+				makeSpace(0);
+				System.out.println("*Please input an integer*");
+			}
 		}
-		catch(InputMismatchException e)
-		{
-			makeSpace(0);
-			System.out.println("*Please input an integer*");
-			return promptInt(s);
-		}
+		return n;
 	}
 	
 	// Prints the string s and prompts recursively for an integer value
 	// Also checks to make sure the integer is between the min. and the max. values specified
 	public static int promptInt(String s, int min, int max)
 	{
-		Scanner userInput = null;
-		try
+		int n = 0;
+		boolean promptDone = false;
+		while(!promptDone)
 		{
-			System.out.println(s);
-			userInput = new Scanner(System.in);
-			int n = userInput.nextInt();
-			if(n<min || n>max)
+			try
 			{
-				throw new InputMismatchException();
+				System.out.println(s);
+				userInput = new Scanner(System.in);
+				n = userInput.nextInt();
+				if(n<min || n>max)
+				{
+					throw new InputMismatchException();
+				}
+				promptDone = true;
 			}
-			return n;
+			catch(InputMismatchException e)
+			{
+				makeSpace(0);
+				System.out.println("*Please input an integer between " + min + " and " + max + "*");
+			}
 		}
-		catch(InputMismatchException e)
-		{
-			makeSpace(0);
-			System.out.println("*Please input an integer between " + min + " and " + max + "*");
-			return promptInt(s, min, max);
-		}
+		return n;
 	}
 		
 	//Returns a 2D boolean array such that b[i][j] becomes b[j][i] for all values of i and j

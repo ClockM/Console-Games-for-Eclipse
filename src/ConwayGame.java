@@ -1,7 +1,5 @@
 
 /**
- *  @author Will Brown (AKA ClockM)
- *  
  *  Things to add/do:
  * 	Improve clarity of comments
  * 	
@@ -10,6 +8,8 @@
  *  ver. 0.4- Adjustable settings for game rules
  * 	ver. ???- Saving and loading boards
  *  ver. ???- Hexagonal boards
+ *  
+ *  @author Will Brown (AKA ClockM)
  *  **/
 
 public class ConwayGame {
