@@ -1,6 +1,12 @@
 # ConsoleGames
-A collection of some Java console games I'm making for educational and experimental purposes
+Console games written for Eclipse IDE for Java developers
 
-I'll be using this as my own personal sandbox for stuff
+Collaborators: Will Brown (AKA ClockM)
 
-Note: these games were written for use by Eclipse. I haven't tested anything for other IDEs
+Games in development:
+Conway's Game of Life (ConwayGame)
+
+Games I might add later:
+Minesweeper
+"Where's an Egg?"
+Mastermind

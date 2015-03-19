@@ -1,24 +1,33 @@
 
-/** Things to add/do:
+/**
+ *  @author Will Brown (AKA ClockM)
+ *  
+ *  Things to add/do:
  * 	Improve clarity of comments
- * 	A system for easy input for making initial boards
- * 	A system for incrementing the board manually or automatically
- * 	A system for saving and loading boards
- *  A system for hexagonal boards**/
+ * 	
+ * 	Road map:
+ * 	ver. 0.3- Incrementing the board manually or automatically
+ *  ver. 0.4- Adjustable settings for game rules
+ * 	ver. ???- Saving and loading boards
+ *  ver. ???- Hexagonal boards
+ *  **/
 
 public class ConwayGame {
 	
-	public double verNum = 0.20;
+	public double verNum = 0.21;
 	
-	// Runs the game. Not to be confused with run()
+	// Runs the game. Not to be confused with run()!
 	public void runGame()
 	{
 		System.out.println("Welcome to GoL v. " + verNum + "!");
 		
-		// Main menu determines the board. newGame and loadGame may be void later
+		/* mainSelect menu (AKA "Main Menu"):
+		 * (n == 1): calls newGame() to prompt the dimensions of the board and then open the "board editor"
+		 * (n == 2): calls loadGame() and the loadSelect menu
+		*/
 		boolean[][] b = null;
-		int menuOption = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
-		switch(menuOption)
+		int mainSelect = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
+		switch(mainSelect)
 		{
 			case 1: b = newGame();
 			break;
@@ -38,38 +47,49 @@ public class ConwayGame {
 		
 	}
 	
-	// Creates a new board
+	// Prompts the dimensions of the new board and then opens the board editor
 	private boolean[][] newGame()
 	{
-		// Prompts the length and height of the board and stores the dimensions in b
+		// Prompts the length and height, then creates bNew with every cell false
 		boolean[][] bNew = new boolean[ConGameUtil.promptInt("Length of the board? (In cells)", 1, 10)][ConGameUtil.promptInt("Height of the board? (In cells)", 1, 10)];
 		
-		boolean doneEditingBoard = false;
-		while (!doneEditingBoard)
+		// This segment of code is the "board editor", and it contains 2 menus: "rowSelect" and "cellSelect"
+		// I may eventually migrate this to its own "boardEditor" method
+		
+		/* rowSelect menu:
+		 * (n == 0): Returns bNew
+		 * (1 <= n <= bNew[0].length): Opens up the cellSelect menu for specified row (nth row from the bottom)
+		*/
+		boolean rowSelectDone = false;
+		while (!rowSelectDone)
 		{
 			ConGameUtil.makeSpace(0);
 			printBoard(bNew);
 			
-			int rowOption = ConGameUtil.promptInt("Enter the # of a row (from the bottom) to edit it.\nEnter 0 once you're done.", 0, bNew[0].length);
-			if(rowOption == 0)
+			int rowSelect = ConGameUtil.promptInt("Enter the # of a row (from the bottom) to edit it.\nEnter 0 once you're done.", 0, bNew[0].length);
+			if(rowSelect == 0)
 			{
-				doneEditingBoard = true;
+				rowSelectDone = true;
 			}
 			else
 			{
-				boolean doneEditingRow = false;
-				while(!doneEditingRow)
+				/* cellSelect menu:
+				 * (n == 0): Sends user back to the rowSelect menu
+				 * (1 <= n <= bNew.length): changes the value of the specified cell (nth cell from the left)
+				*/
+				boolean cellSelectDone = false;
+				while(!cellSelectDone)
 				{
 					ConGameUtil.makeSpace(0);
-					printRow(bNew, rowOption-1);
-					int cellOption = ConGameUtil.promptInt("Enter the # of a cell (from the left) to change it.\nEnter 0 once you're done.", 0, bNew.length);
-					if(cellOption == 0)
+					printRow(bNew, rowSelect - 1);
+					int cellSelect = ConGameUtil.promptInt("Enter the # of a cell (from the left) to change it.\nEnter 0 once you're done.", 0, bNew.length);
+					if(cellSelect == 0)
 					{
-						doneEditingRow = true;
+						cellSelectDone = true;
 					}
 					else
 					{
-						bNew[cellOption - 1][rowOption - 1] = !bNew[cellOption - 1][rowOption - 1];
+						bNew[cellSelect - 1][rowSelect - 1] = !bNew[cellSelect - 1][rowSelect - 1];
 					}
 				}
 			}
@@ -78,7 +98,7 @@ public class ConwayGame {
 		return bNew;
 	}
 	
-	// Loads test boards, will later read files and load them
+	// Loads test boards, will later read files and load them (Hopefully)
 	private boolean[][] loadGame()
 	{
 		// test boards are hard-coded below, as they would appear in the console
@@ -95,8 +115,13 @@ public class ConwayGame {
  		 					{false, true, true, true, false},};
 		
 		ConGameUtil.makeSpace(0);
-		int loadMenu = ConGameUtil.promptInt("1. Load test1 \n2. Load test2", 1, 2);
-		switch(loadMenu)
+		
+		/* loadSelect menu:
+		 * (n == 1): returns test1
+		 * (n == 2): returns test2
+		*/
+		int loadSelect = ConGameUtil.promptInt("1. Load test1 \n2. Load test2", 1, 2);
+		switch(loadSelect)
 		{
 			case 1: return ConGameUtil.SwapDim(test1);
 			case 2: return ConGameUtil.SwapDim(test2);
@@ -173,7 +198,6 @@ public class ConwayGame {
 	 * NOTE! printBoard() and printRow() are candidates for migration to ConGameUtil*/
 	
 	// Prints the board passed to it. 1 is alive and 0 is dead.
-	// Candidate for migration to ConGameUtil. 
 	private void printBoard(boolean[][] b)
 	{
 		for(int j=b[0].length-1;j>=0;j--)
