@@ -14,7 +14,7 @@
 
 public class ConwayGame {
 	
-	public double verNum = 0.23;
+	public double verNum = 0.24;
 	
 	// Runs the game. Not to be confused with run()!
 	public void runGame()
