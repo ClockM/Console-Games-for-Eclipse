@@ -14,7 +14,7 @@
 
 public class ConwayGame {
 	
-	public double verNum = 0.21;
+	public double verNum = 0.23;
 	
 	// Runs the game. Not to be confused with run()!
 	public void runGame()
@@ -22,20 +22,21 @@ public class ConwayGame {
 		System.out.println("Welcome to GoL v. " + verNum + "!");
 		
 		/* mainSelect menu (AKA "Main Menu"):
-		 * (n == 1): calls newGame() to prompt the dimensions of the board and then open the "board editor"
+		 * (n == 1): calls editBoard() with prompts for the dimensions of the board as arguments
 		 * (n == 2): calls loadGame() and the loadSelect menu
 		*/
 		boolean[][] b = null;
 		int mainSelect = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
-		switch(mainSelect)
+		if(mainSelect == 1)
 		{
-			case 1: b = newGame();
-			break;
-			case 2: b = loadGame();
-			break;
+			b = editBoard(new boolean[ConGameUtil.promptInt("Length of the board? (In cells)", 1, 50)][ConGameUtil.promptInt("Height of the board? (In cells)", 1, 50)]);
+		}
+		else
+		{
+			b = loadGame();
 		}
 		
-		//Prints the first few steps on the board
+		
 		ConGameUtil.makeSpace(4);
 		printBoard(b);
 		for(int i=0;i<=5;i++)
@@ -47,55 +48,47 @@ public class ConwayGame {
 		
 	}
 	
-	// Prompts the dimensions of the new board and then opens the board editor
-	private boolean[][] newGame()
-	{
-		// Prompts the length and height, then creates bNew with every cell false
-		boolean[][] bNew = new boolean[ConGameUtil.promptInt("Length of the board? (In cells)", 1, 10)][ConGameUtil.promptInt("Height of the board? (In cells)", 1, 10)];
-		
-		// This segment of code is the "board editor", and it contains 2 menus: "rowSelect" and "cellSelect"
-		// I may eventually migrate this to its own "boardEditor" method
-		
+	// An interface for editing the board, consisting of 2 menus: "rowSelect" and "cellSelect"
+	private boolean[][] editBoard(boolean[][] b)
+	{			
 		/* rowSelect menu:
-		 * (n == 0): Returns bNew
-		 * (1 <= n <= bNew[0].length): Opens up the cellSelect menu for specified row (nth row from the bottom)
+		 * (n == 0): Returns b
+		 * (1 <= n <= b[0].length): Opens up the cellSelect menu for specified row (nth row from the bottom)
 		*/
-		boolean rowSelectDone = false;
-		while (!rowSelectDone)
+		while (true)
 		{
 			ConGameUtil.makeSpace(0);
-			printBoard(bNew);
+			printBoard(b);
 			
-			int rowSelect = ConGameUtil.promptInt("Enter the # of a row (from the bottom) to edit it.\nEnter 0 once you're done.", 0, bNew[0].length);
+			int rowSelect = ConGameUtil.promptInt("Enter the # of a row (from the bottom) to edit it.\nEnter 0 once you're done.", 0, b[0].length);
 			if(rowSelect == 0)
 			{
-				rowSelectDone = true;
+				break;
 			}
 			else
 			{
 				/* cellSelect menu:
 				 * (n == 0): Sends user back to the rowSelect menu
-				 * (1 <= n <= bNew.length): changes the value of the specified cell (nth cell from the left)
+				 * (1 <= n <= b.length): changes the value of the specified cell (nth cell from the left)
 				*/
-				boolean cellSelectDone = false;
-				while(!cellSelectDone)
+				while(true)
 				{
 					ConGameUtil.makeSpace(0);
-					printRow(bNew, rowSelect - 1);
-					int cellSelect = ConGameUtil.promptInt("Enter the # of a cell (from the left) to change it.\nEnter 0 once you're done.", 0, bNew.length);
+					printRow(b, rowSelect - 1);
+					int cellSelect = ConGameUtil.promptInt("\nEnter the # of a cell (from the left) to change it.\nEnter 0 once you're done.", 0, b.length);
 					if(cellSelect == 0)
 					{
-						cellSelectDone = true;
+						break;
 					}
 					else
 					{
-						bNew[cellSelect - 1][rowSelect - 1] = !bNew[cellSelect - 1][rowSelect - 1];
+						b[cellSelect - 1][rowSelect - 1] = !b[cellSelect - 1][rowSelect - 1];
 					}
 				}
 			}
 		}
 		
-		return bNew;
+		return b;
 	}
 	
 	// Loads test boards, will later read files and load them (Hopefully)
