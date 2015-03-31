@@ -4,7 +4,6 @@
  * 	Improve clarity of comments
  * 	
  * 	Road map:
- * 	ver. 0.3- Incrementing the board manually or automatically
  *  ver. 0.4- Adjustable settings for game rules
  * 	ver. ???- Saving and loading boards
  *  ver. ???- Hexagonal boards
@@ -14,7 +13,7 @@
 
 public class ConwayGame {
 	
-	public double verNum = 0.24;
+	public double verNum = 0.30;
 	
 	// Runs the game. Not to be confused with run()!
 	public void runGame()
@@ -22,13 +21,14 @@ public class ConwayGame {
 		System.out.println("Welcome to GoL v. " + verNum + "!");
 		
 		/* mainSelect menu (AKA "Main Menu"):
-		 * (n == 1): calls editBoard() with prompts for the dimensions of the board as arguments
-		 * (n == 2): calls loadGame() and the loadSelect menu
+		 * (n == 1): Calls editBoard() with prompts for the dimensions of the board as arguments.
+		 * (n == 2): Calls loadGame() and the loadSelect menu.
 		*/
 		boolean[][] b = null;
-		int mainSelect = ConGameUtil.promptInt("\n1. New game\n2. Load game (test)", 1, 2);
+		int mainSelect = ConGameUtil.promptInt("\n1: New game\n2: Load game (test)", 1, 2);
 		if(mainSelect == 1)
 		{
+			ConGameUtil.makeSpace(0);
 			b = editBoard(new boolean[ConGameUtil.promptInt("Length of the board? (In cells)", 1, 50)][ConGameUtil.promptInt("Height of the board? (In cells)", 1, 50)]);
 		}
 		else
@@ -36,46 +36,122 @@ public class ConwayGame {
 			b = loadGame();
 		}
 		
-		
-		ConGameUtil.makeSpace(4);
-		printBoard(b);
-		for(int i=0;i<=5;i++)
+		runBoard:
+		while(true)
 		{
-			b = nextBoard(b);
-			ConGameUtil.makeSpace(4);
-			printBoard(b);
+			ConGameUtil.makeSpace(1);
+			for(int j=b[0].length-1; j >= 0; j--)
+			{
+				printRow(b, j, 1);
+				System.out.println();
+			}
+			
+			/* stepSelect menu:
+			 * (n == 0): Breaks the 'while' loop.
+			 * (n == 1): Calls nextBoard() to increment b, then loops.
+			 * (n == 2): Calls autoBoard() with a prompt for the number of steps to take as the argument, then loops.
+			 * (n == 3): Calls editBoard() to edit b, then loops.
+			 * (n < 0 || n > 2): Prints a friendly message to the console, then loops without changing the value of b.
+			*/
+			int stepSelect = ConGameUtil.promptInt("\n0: Exit | 1: Next | 2: Auto | 3: Edit", 0, 2);
+			switch(stepSelect)
+			{
+				case 0:	break runBoard;
+				
+				case 1:	b = nextBoard(b);
+						break;
+				case 2:	b = autoBoard(b, ConGameUtil.promptInt("0: Cancel | 1-10: Select # of steps", 0, 10));
+						break;
+				case 3:	b = editBoard(b);
+						break;
+						
+				default:System.out.println("Invalid option for stepSelect!");
+			}
 		}
 		
+	}
+	
+	// Automatically prints the next n steps of the board b passed to it
+	// Returns the nth step of b without printing it, so it can be printed later
+	// If n == 0 then it returns b without printing anything
+	private boolean[][] autoBoard(boolean[][] b, int n)
+	{
+		boolean[][] bNext = b;
+		for(int i = 0; i < n; i++)
+		{
+			bNext = nextBoard(bNext);
+			if(i != n - 1)
+			{
+				ConGameUtil.makeSpace(1);
+				for(int j = bNext[0].length - 1; j >= 0; j--)
+				{
+					printRow(bNext, j, 1);
+					System.out.println();
+				}
+			}
+		}
+		return bNext;
 	}
 	
 	// An interface for editing the board, consisting of 2 menus: "rowSelect" and "cellSelect"
 	private boolean[][] editBoard(boolean[][] b)
 	{			
-		/* rowSelect menu:
-		 * (n == 0): Returns b
-		 * (1 <= n <= b[0].length): Opens up the cellSelect menu for specified row (nth row from the bottom)
-		*/
 		while (true)
 		{
 			ConGameUtil.makeSpace(0);
-			printBoard(b);
+			for(int j=b[0].length-1; j >= 0; j--)
+			{
+				if(j+1<10)
+				{
+					System.out.print(" ");
+				}
+				System.out.print( (j+1) + "|  ");
+				printRow(b, j, 2);
+				System.out.println();
+			}
 			
-			int rowSelect = ConGameUtil.promptInt("Enter the # of a row (from the bottom) to edit it.\nEnter 0 once you're done.", 0, b[0].length);
+			/* rowSelect menu:
+			 * (n == 0): Returns b.
+			 * (1 <= n <= b[0].length): Opens up the cellSelect menu for specified row (nth row from the bottom) then loops.
+			*/
+			int rowSelect = ConGameUtil.promptInt("\n0: Finish | 1-" + b[0].length + ": Select row", 0, b[0].length);
 			if(rowSelect == 0)
 			{
 				break;
 			}
 			else
 			{
-				/* cellSelect menu:
-				 * (n == 0): Sends user back to the rowSelect menu
-				 * (1 <= n <= b.length): changes the value of the specified cell (nth cell from the left)
-				*/
 				while(true)
 				{
 					ConGameUtil.makeSpace(0);
-					printRow(b, rowSelect - 1);
-					int cellSelect = ConGameUtil.promptInt("\nEnter the # of a cell (from the left) to change it.\nEnter 0 once you're done.", 0, b.length);
+					if(rowSelect < 10)
+					{
+						System.out.print(" ");
+					}
+					System.out.print(rowSelect + "|  ");
+					printRow(b, rowSelect - 1, 2);
+					System.out.print("\n     ");
+					for(int i = 1; i <= b.length; i++)
+					{
+						System.out.print("_");
+						System.out.print("  ");
+					}
+					System.out.print("\n     ");
+					for(int i = 1; i <= b.length; i++)
+					{
+						System.out.print(i);
+						System.out.print(" ");
+						if(i<10)
+						{
+							System.out.print(" ");
+						}
+					}
+					
+					/* cellSelect menu:
+					 * (n == 0): Sends user back to the rowSelect menu by breaking the nested 'while' loop.
+					 * (1 <= n <= b.length): Changes the value of the specified cell (nth cell from the left) then loops.
+					*/
+					int cellSelect = ConGameUtil.promptInt("\n\n0: Back | 1-" + b.length + ": Edit cell", 0, b.length);
 					if(cellSelect == 0)
 					{
 						break;
@@ -110,14 +186,15 @@ public class ConwayGame {
 		ConGameUtil.makeSpace(0);
 		
 		/* loadSelect menu:
-		 * (n == 1): returns test1
-		 * (n == 2): returns test2
+		 * (n == 1): Returns test1.
+		 * (n == 2): Returns test2.
 		*/
 		int loadSelect = ConGameUtil.promptInt("1. Load test1 \n2. Load test2", 1, 2);
 		switch(loadSelect)
 		{
 			case 1: return ConGameUtil.SwapDim(test1);
 			case 2: return ConGameUtil.SwapDim(test2);
+			
 			default: return new boolean[1][1];
 		}
 	}
@@ -129,17 +206,17 @@ public class ConwayGame {
 		boolean[][] bNext = new boolean[b.length][b[0].length];
 		
 		//The first set of nested loops goes through the entire board (same order as drawing- Left-right up-down)
-		for(int j=b[0].length-1;j>=0;j--)
+		for(int j = b[0].length - 1; j >= 0; j--)
 		{
-			for(int i=0;i<b.length;i++)
+			for(int i = 0; i < b.length; i++)
 			{
 				// The # of neighbors counted
 				int n = 0;
 				
 				//Second set of nested loops used to count neighbors of selected cell
-				for(int k = (i-1);k<=(i+1);k++)
+				for(int k = i - 1; k <= i + 1;k++)
 				{
-					for(int l = (j-1);l<=(j+1);l++)
+					for(int l = (j - 1); l <= (j + 1); l++)
 					{   
 						try
 						{
@@ -153,7 +230,7 @@ public class ConwayGame {
 							// Does nothing if exception is caught
 						}
 					}
-				} //End of second set of nested for loops
+				} //End of second set of nested 'for' loops
 				
 				//Subtracts itself from # of neighbors if alive
 				if(b[i][j])
@@ -173,39 +250,28 @@ public class ConwayGame {
 						bNext[i][j] = true;
 					}
 				}
-				else
+				else if(n==3)
 				{
-					if(n==3)
-					{
-						bNext[i][j] = true;
-					}
+					bNext[i][j] = true;
 				}
 			}
 		} //End of first set of nested for loops
 		return bNext;
 	}
 	
-	/* NOTE! The order of j and i are swapped around to accommodate for
-	 * printing in console, such that each cell is printed left-right, up-down.
-	 * j is still Y and i is still X though...
-	 * NOTE! printBoard() and printRow() are candidates for migration to ConGameUtil*/
-	
-	// Prints the board passed to it. 1 is alive and 0 is dead.
-	private void printBoard(boolean[][] b)
-	{
-		for(int j=b[0].length-1;j>=0;j--)
-		{
-			printRow(b, j);
-			System.out.println();
-		}
-	}
+	/* NOTE! The values for j and i accommodate for printing in console,
+	 * such that each cell is printed left-right, up-down.
+	 * 
+	 * Thus j corresponds with the Y coordinate and i corresponds with the X coordinate
+	 * of each cell from the bottom-left corner of the board.
+	*/
 
 	// Prints the row (All values of i for j) of the board passed
-	private void printRow(boolean[][] b, int j)
+	private void printRow(boolean[][] b, int row, int spaces)
 	{
-		for(int i = 0; i<b.length; i++)
+		for(int i = 0; i < b.length; i++)
 		{
-			if(b[i][j])
+			if(b[i][row])
 			{
 				System.out.print("1");
 			}
@@ -214,7 +280,10 @@ public class ConwayGame {
 				System.out.print("0");
 			}
 			
-			System.out.print(" ");
+			for(int j = 0; j < spaces; j++)
+			{
+				System.out.print(" ");
+			}
 		}
 	}
 }

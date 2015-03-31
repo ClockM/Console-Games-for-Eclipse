@@ -32,15 +32,14 @@ public class ConGameUtil
 	public static int promptInt(String s)
 	{
 		int n = 0;
-		boolean promptDone = false;
-		while(!promptDone)
+		while(true)
 		{
 			try
 			{
 				System.out.println(s);
 				userInput = new Scanner(System.in);
 				n = userInput.nextInt();
-				promptDone = true;
+				break;
 			}
 			catch(InputMismatchException e)
 			{
@@ -56,8 +55,7 @@ public class ConGameUtil
 	public static int promptInt(String s, int min, int max)
 	{
 		int n = 0;
-		boolean promptDone = false;
-		while(!promptDone)
+		while(true)
 		{
 			try
 			{
@@ -68,7 +66,7 @@ public class ConGameUtil
 				{
 					throw new InputMismatchException();
 				}
-				promptDone = true;
+				break;
 			}
 			catch(InputMismatchException e)
 			{
