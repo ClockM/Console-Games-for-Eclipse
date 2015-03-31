@@ -1,4 +1,4 @@
-# ConsoleGames
+# Console Games for Eclipse
 Console games written for Eclipse IDE for Java developers
 
 Collaborators: Will Brown (AKA ClockM)
