@@ -11,25 +11,30 @@
  *  @author Will Brown (AKA ClockM)
  *  **/
 
-public class ConwayGame {
+public class ConwayGame extends ConsoleGame{
 	
-	public double verNum = 0.30;
+	public ConwayGame()
+	{
+		super();
+		this.version = 0.31;
+		this.title = "Conway's Game of Life";
+	}
 	
 	// Runs the game. Not to be confused with run()!
 	public void runGame()
 	{
-		System.out.println("Welcome to GoL v. " + verNum + "!");
+		System.out.println("You're playing " + title + " v. " + version + "!");
 		
 		/* mainSelect menu (AKA "Main Menu"):
 		 * (n == 1): Calls editBoard() with prompts for the dimensions of the board as arguments.
 		 * (n == 2): Calls loadGame() and the loadSelect menu.
 		*/
 		boolean[][] b = null;
-		int mainSelect = ConGameUtil.promptInt("\n1: New game\n2: Load game (test)", 1, 2);
+		int mainSelect = promptInt("\n1: New game\n2: Load game (test)", 1, 2);
 		if(mainSelect == 1)
 		{
-			ConGameUtil.makeSpace(0);
-			b = editBoard(new boolean[ConGameUtil.promptInt("Length of the board? (In cells)", 1, 50)][ConGameUtil.promptInt("Height of the board? (In cells)", 1, 50)]);
+			makeSpace(0);
+			b = editBoard(new boolean[promptInt("Length of the board? (In cells)", 1, 50)][promptInt("Height of the board? (In cells)", 1, 50)]);
 		}
 		else
 		{
@@ -39,7 +44,7 @@ public class ConwayGame {
 		runBoard:
 		while(true)
 		{
-			ConGameUtil.makeSpace(1);
+			makeSpace(1);
 			for(int j=b[0].length-1; j >= 0; j--)
 			{
 				printRow(b, j, 1);
@@ -53,14 +58,14 @@ public class ConwayGame {
 			 * (n == 3): Calls editBoard() to edit b, then loops.
 			 * (n < 0 || n > 2): Prints a friendly message to the console, then loops without changing the value of b.
 			*/
-			int stepSelect = ConGameUtil.promptInt("\n0: Exit | 1: Next | 2: Auto | 3: Edit", 0, 2);
+			int stepSelect = promptInt("\n0: Exit | 1: Next | 2: Auto | 3: Edit", 0, 2);
 			switch(stepSelect)
 			{
 				case 0:	break runBoard;
 				
 				case 1:	b = nextBoard(b);
 						break;
-				case 2:	b = autoBoard(b, ConGameUtil.promptInt("0: Cancel | 1-10: Select # of steps", 0, 10));
+				case 2:	b = autoBoard(b, promptInt("0: Cancel | 1-10: Select # of steps", 0, 10));
 						break;
 				case 3:	b = editBoard(b);
 						break;
@@ -82,7 +87,7 @@ public class ConwayGame {
 			bNext = nextBoard(bNext);
 			if(i != n - 1)
 			{
-				ConGameUtil.makeSpace(1);
+				makeSpace(1);
 				for(int j = bNext[0].length - 1; j >= 0; j--)
 				{
 					printRow(bNext, j, 1);
@@ -98,7 +103,7 @@ public class ConwayGame {
 	{			
 		while (true)
 		{
-			ConGameUtil.makeSpace(0);
+			makeSpace(0);
 			for(int j=b[0].length-1; j >= 0; j--)
 			{
 				if(j+1<10)
@@ -114,7 +119,7 @@ public class ConwayGame {
 			 * (n == 0): Returns b.
 			 * (1 <= n <= b[0].length): Opens up the cellSelect menu for specified row (nth row from the bottom) then loops.
 			*/
-			int rowSelect = ConGameUtil.promptInt("\n0: Finish | 1-" + b[0].length + ": Select row", 0, b[0].length);
+			int rowSelect = promptInt("\n0: Finish | 1-" + b[0].length + ": Select row", 0, b[0].length);
 			if(rowSelect == 0)
 			{
 				break;
@@ -123,7 +128,7 @@ public class ConwayGame {
 			{
 				while(true)
 				{
-					ConGameUtil.makeSpace(0);
+					makeSpace(0);
 					if(rowSelect < 10)
 					{
 						System.out.print(" ");
@@ -151,7 +156,7 @@ public class ConwayGame {
 					 * (n == 0): Sends user back to the rowSelect menu by breaking the nested 'while' loop.
 					 * (1 <= n <= b.length): Changes the value of the specified cell (nth cell from the left) then loops.
 					*/
-					int cellSelect = ConGameUtil.promptInt("\n\n0: Back | 1-" + b.length + ": Edit cell", 0, b.length);
+					int cellSelect = promptInt("\n\n0: Back | 1-" + b.length + ": Edit cell", 0, b.length);
 					if(cellSelect == 0)
 					{
 						break;
@@ -183,17 +188,17 @@ public class ConwayGame {
  		 					{false, false, true, false, false},
  		 					{false, true, true, true, false},};
 		
-		ConGameUtil.makeSpace(0);
+		makeSpace(0);
 		
 		/* loadSelect menu:
 		 * (n == 1): Returns test1.
 		 * (n == 2): Returns test2.
 		*/
-		int loadSelect = ConGameUtil.promptInt("1. Load test1 \n2. Load test2", 1, 2);
+		int loadSelect = promptInt("1. Load test1 \n2. Load test2", 1, 2);
 		switch(loadSelect)
 		{
-			case 1: return ConGameUtil.SwapDim(test1);
-			case 2: return ConGameUtil.SwapDim(test2);
+			case 1: return SwapDim(test1);
+			case 2: return SwapDim(test2);
 			
 			default: return new boolean[1][1];
 		}
